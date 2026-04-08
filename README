@@ -34,6 +34,8 @@ graph TD;
     G -.->|Latent Attributes| B;
     E --> A;
 ```
+Or, one Gif worth thouseld nodes/edeges
+![Demo](assets/Recording 2026-04-08 183720.gif)
 
 ### 1. Agent (Core Logic) ⚙️
 **Location:** `agent/`
@@ -139,7 +141,11 @@ Run the interactive demo:
 ```bash
 python main.py
 ```
-
+use one of the zipcodes in the mock data - yoe can choose 
+90210
+60614
+30339
+10001
 ---
 
 ## 📐 Design Principles
