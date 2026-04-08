@@ -1,0 +1,171 @@
+# Adaptive Questionnaire Agent
+
+An intelligent, adaptive questionnaire system designed to minimize user friction while maximizing data completeness for loan matching.
+
+The system dynamically decides:
+- what to ask
+- what to infer
+- what to confirm
+- and what to postpone
+
+It combines deterministic decision logic with LLM-based inference to reduce unnecessary questions and improve user experience.
+
+---
+
+## 🚀 Key Idea
+
+Instead of asking users a fixed list of questions, the system:
+
+1. Ingests campaign and contextual data
+2. Infers as much as possible automatically
+3. Asks only when necessary
+4. Continuously updates its beliefs after each user response
+
+---
+
+## 🧠 Architecture Overview
+
+The system is built around a clear separation of responsibilities:
+
+### 1. Agent (Core Logic)
+
+Located in: `agent/`
+
+Responsible for:
+- Decision making (ask / confirm / accept / postpone)
+- State management
+- Question orchestration
+- Field strategy (via Field Registry)
+
+This layer is **deterministic and explainable**.
+
+---
+
+### 2. Inference Engine (LLM-powered)
+
+Located in: `agent/llm_inference_engine.py`
+
+Responsible for:
+- Inferring latent user attributes (e.g., credit score range)
+- Combining signals from campaign data, location, and known fields
+
+This layer is **probabilistic and flexible**.
+
+---
+
+### 3. Data Layer
+
+Located in: `data/`
+
+Includes:
+- `mock_data.py` → user scenarios
+- `zillow_mock_api.py` → mocked enrichment API (zipcode → property insights)
+
+This simulates external data sources such as Zillow or Census APIs.
+
+---
+
+## 📂 Project Structure
+adaptive_questionnaire_agent/
+│
+├── main.py # Entry point (interactive demo)
+├── README.md
+│
+├── agent/
+│ ├── models.py
+│ ├── state.py
+│ ├── field_registry.py
+│ ├── decision_engine.py
+│ ├── questionnaire_engine.py
+│ ├── question_catalog.py
+│ └── llm_inference_engine.py
+│
+└── data/
+├── mock_data.py
+└── zillow_mock_api.py
+
+
+---
+
+## ⚙️ How It Works
+
+### Step 1: Initialization
+- Load campaign data (intent, targeting)
+- Load user context (e.g., zipcode)
+
+### Step 2: Enrichment
+- Call mocked Zillow API to infer:
+  - property value range
+  - property type
+  - income hints
+  - confidence levels
+
+### Step 3: Inference
+- LLM infers harder attributes such as:
+  - credit score range
+  - financial profile consistency
+
+### Step 4: Decision Engine
+For each field, the system decides:
+
+- `accept` → high confidence, no need to ask  
+- `confirm` → show guess, ask for validation  
+- `ask` → no reliable inference  
+- `postpone` → avoid friction for now  
+
+### Step 5: Iteration
+After each user answer:
+- state is updated
+- inference is re-run
+- next question is selected
+
+---
+
+## 🎯 Example Behavior
+
+Instead of asking:
+
+> "What is your property type?"
+
+The system might say:
+
+> "Based on your area, properties are typically single-family homes. Does this match your property?"
+
+Or skip the question entirely if confidence is high.
+
+---
+
+## 🧪 Running the Project
+
+### 1. Install dependencies
+
+```bash
+pip install openai
+
+### 2.Run the agent
+```bash
+python main.py
+
+
+## Design Principles
+Minimize user friction
+Maximize inferred data
+Keep decision logic explainable
+Separate inference from orchestration
+Gracefully degrade when confidence is low
+
+
+
+## ⚠️ Notes
+Zillow API is mocked for demonstration purposes
+Confidence scores are prior-based and need to be updated online
+The system is designed to be easily extended to real APIs
+
+
+## 💡 Future Improvements
+
+Replace mock APIs with real integrations
+
+Learning loop from historical user data
+
+Improve confidence calibration using real distributions
