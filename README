@@ -35,7 +35,7 @@ graph TD;
     E --> A;
 ```
 Or, one Gif worth thouseld nodes/edeges
-![Demo](assets/Recording 2026-04-08 183720.gif)
+![Demo](assets/Recording_demo.gif)
 
 ### 1. Agent (Core Logic) ⚙️
 **Location:** `agent/`
