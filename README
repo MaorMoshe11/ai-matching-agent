@@ -34,7 +34,7 @@ graph TD;
     G -.->|Latent Attributes| B;
     E --> A;
 ```
-Or, one Gif worth thouseld nodes/edeges
+Sometimes, one Gif worth more then thouseld nodes and edeges:
 ![Demo](assets/recording_demo.gif)
 
 
