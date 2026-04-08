@@ -1,5 +1,3 @@
-readme_content = """<div align="center">
-
 # 🧠 Adaptive Questionnaire Agent
 
 **An intelligent, dynamic questionnaire system designed to minimize user friction while maximizing data completeness.**
@@ -7,8 +5,6 @@ readme_content = """<div align="center">
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-API-green.svg)](https://openai.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-</div>
 
 ---
 
@@ -37,56 +33,59 @@ graph TD;
     F[Zillow/Census Mock APIs] -.-> G(LLM Inference Engine);
     G -.->|Latent Attributes| B;
     E --> A;
+```
 
-1. Agent (Core Logic) ⚙️
-Location: agent/
+### 1. Agent (Core Logic) ⚙️
+**Location:** `agent/`
+
 This is the deterministic and explainable layer of the system.
 
-Responsibilities: Decision making (ask / confirm / accept / postpone), state management, question orchestration, and field strategy (via Field Registry).
+**Responsibilities:** Decision making (ask / confirm / accept / postpone), state management, question orchestration, and field strategy (via Field Registry).
 
-2. Inference Engine (LLM-Powered) 🔮
-Location: agent/llm_inference_engine.py
+### 2. Inference Engine (LLM-Powered) 🔮
+**Location:** `agent/llm_inference_engine.py`
+
 This is the probabilistic and flexible layer.
 
-Responsibilities: Inferring latent user attributes (e.g., credit score range) by combining signals from campaign data, location, and previously answered fields.
+**Responsibilities:** Inferring latent user attributes (e.g., credit score range) by combining signals from campaign data, location, and previously answered fields.
 
-3. Data Layer 🗄️
-Location: data/
+### 3. Data Layer 🗄️
+**Location:** `data/`
+
 Simulates external enrichment sources.
 
-Components: mock_data.py (user scenarios) and zillow_mock_api.py (mocked enrichment API mapping zipcodes to property insights).
+**Components:** `mock_data.py` (user scenarios) and `zillow_mock_api.py` (mocked enrichment API mapping zipcodes to property insights).
 
-⚙️ How It Works (The Pipeline)
-Initialization: Loads campaign data (intent, targeting) and initial user context (e.g., zipcode).
+---
 
-Enrichment: Calls external APIs (mocked Zillow) to establish baselines (property value range, property type, income hints) with confidence levels.
+## ⚙️ How It Works (The Pipeline)
 
-Inference: The LLM analyzes the enriched context to infer complex attributes, such as financial profile consistency or credit brackets.
+1. **Initialization:** Loads campaign data (intent, targeting) and initial user context (e.g., zipcode).
+2. **Enrichment:** Calls external APIs (mocked Zillow) to establish baselines (property value range, property type, income hints) with confidence levels.
+3. **Inference:** The LLM analyzes the enriched context to infer complex attributes, such as financial profile consistency or credit brackets.
+4. **Decision:** For each required field, the Decision Engine applies a strategy:
+   - 🟢 **accept** → High confidence, no need to ask.
+   - 🟡 **confirm** → Moderate confidence, show the system's guess and ask for validation.
+   - 🟠 **ask** → Low confidence / missing data, ask directly.
+   - ⚪ **postpone** → High friction question, delay until more trust is built.
+5. **Iteration:** After each interaction, the state is updated, inference is re-run, and the next optimal step is calculated.
 
-Decision: For each required field, the Decision Engine applies a strategy:
+---
 
-🟢 accept → High confidence, no need to ask.
+## 🎯 Example Behavior
 
-🟡 confirm → Moderate confidence, show the system's guess and ask for validation.
+**❌ Traditional System:**
+> "What is your property type?"
 
-🟠 ask → Low confidence / missing data, ask directly.
+**✅ Adaptive Agent:**
+> "Based on your area, properties are typically single-family homes. Does this match your property?"
+> *(Or it might skip the question entirely if statistical confidence is high enough.)*
 
-⚪ postpone → High friction question, delay until more trust is built.
+---
 
-Iteration: After each interaction, the state is updated, inference is re-run, and the next optimal step is calculated.
+## 📂 Project Structure
 
-🎯 Example Behavior
-❌ Traditional System:
-
-"What is your property type?"
-
-✅ Adaptive Agent:
-
-"Based on your area, properties are typically single-family homes. Does this match your property?"
-(Or it might skip the question entirely if statistical confidence is high enough).
-
-📂 Project Structure
-Plaintext
+```
 adaptive_questionnaire_agent/
 │
 ├── main.py                     # Entry point (interactive demo)
@@ -104,60 +103,66 @@ adaptive_questionnaire_agent/
 └── data/
     ├── mock_data.py            # Test scenarios and user profiles
     └── zillow_mock_api.py      # Simulated external data enrichment
-💻 Getting Started
-Prerequisites
-Python 3.8+
+```
 
-OpenAI API Key
+---
 
-Installation
+## 💻 Getting Started
+
+### Prerequisites
+- Python 3.8+
+- OpenAI API Key
+
+### Installation
+
 Clone the repository and navigate to the directory:
 
-Bash
-git clone [https://github.com/yourusername/adaptive_questionnaire_agent.git](https://github.com/yourusername/adaptive_questionnaire_agent.git)
+```bash
+git clone https://github.com/yourusername/adaptive_questionnaire_agent.git
 cd adaptive_questionnaire_agent
+```
+
 Install the required dependencies:
 
-Bash
+```bash
 pip install openai
-Export your OpenAI API key (or add it to a .env file):
+```
 
-Bash
+Export your OpenAI API key (or add it to a `.env` file):
+
+```bash
 export OPENAI_API_KEY="your-api-key-here"
+```
+
 Run the interactive demo:
 
-Bash
+```bash
 python main.py
-📐 Design Principles
-Minimize User Friction: Only ask what you cannot confidently infer.
+```
 
-Maximize Inferred Data: Use all available context (location, metadata, API enrichment) before interacting with the user.
+---
 
-Explainable Logic: Keep the core routing deterministic. The LLM suggests, the rule engine decides.
+## 📐 Design Principles
 
-Separation of Concerns: Keep inference strictly decoupled from orchestration.
+- **Minimize User Friction:** Only ask what you cannot confidently infer.
+- **Maximize Inferred Data:** Use all available context (location, metadata, API enrichment) before interacting with the user.
+- **Explainable Logic:** Keep the core routing deterministic. The LLM suggests, the rule engine decides.
+- **Separation of Concerns:** Keep inference strictly decoupled from orchestration.
+- **Graceful Degradation:** When confidence drops or APIs fail, gracefully fall back to asking standard questions.
 
-Graceful Degradation: When confidence drops or APIs fail, gracefully fall back to asking standard questions.
+---
 
-⚠️ Important Notes
-Mock Data: The Zillow API implementation is mocked for demonstration purposes.
+## ⚠️ Important Notes
 
-Confidence Calibration: Confidence scores are currently prior-based. In a production environment, these should be continuously updated online.
+- **Mock Data:** The Zillow API implementation is mocked for demonstration purposes.
+- **Confidence Calibration:** Confidence scores are currently prior-based. In a production environment, these should be continuously updated online.
+- **Extensibility:** The `data/` module is designed to be easily swapped with real API integrations (e.g., Plaid, Zillow, Experian).
 
-Extensibility: The data/ module is designed to be easily swapped with real API integrations (e.g., Plaid, Zillow, Experian).
+---
 
-💡 Future Improvements / Roadmap
-[ ] Replace mock APIs with real third-party integrations.
+## 💡 Future Improvements / Roadmap
 
-[ ] Implement a feedback learning loop from historical user data.
-
-[ ] Improve confidence calibration using real-world statistical distributions.
-
-[ ] Add a lightweight web UI (e.g., Streamlit or Gradio) for easier demonstration.
-"""
-
-Create the markdown file and write the string into it
-with open("README.md", "w", encoding="utf-8") as file:
-file.write(readme_content)
-
-print("README.md file was created successfully!")
+- [ ] Replace mock APIs with real third-party integrations.
+- [ ] Implement a feedback learning loop from historical user data.
+- [ ] Improve confidence calibration using real-world statistical distributions.
+- [ ] Add a lightweight web UI (e.g., Streamlit or Gradio) for easier demonstration.
