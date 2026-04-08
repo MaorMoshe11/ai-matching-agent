@@ -37,6 +37,7 @@ graph TD;
 Or, one Gif worth thouseld nodes/edeges
 ![Demo](assets/recording_demo.gif)
 
+
 ### 1. Agent (Core Logic) ⚙️
 **Location:** `agent/`
 
