@@ -3,8 +3,8 @@ import json
 from openai import OpenAI
 
 from agent.models import FieldValue, UserState
-
-client = OpenAI(api_key="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")
+OPEN_AI_KEY = ' insert here your key '
+client = OpenAI(api_key=OPEN_AI_KEY)
 
 
 INFERABLE_FIELDS = [
